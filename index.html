@@ -1,0 +1,451 @@
+<!doctype html>
+<html lang="ru">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Управленческий интенсив</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&family=Unbounded:wght@500;600&display=swap">
+<style>
+/* Layout: a course syllabus sheet. One reading column, a three-step rail on top,
+   the program as a timetable, two price tickets styled identically so neither is pushed. */
+:root{
+  --bg:#EDF0F4; --surface:#FFFFFF; --ink:#141B2D; --muted:#586277; --line:#CDD4DF;
+  --accent:#2E3DC4; --accent-ink:#FFFFFF; --accent-soft:#E2E5FA; --note:#F5E6B3; --note-ink:#3D3114;
+  --display:"Unbounded", "Golos Text", system-ui, sans-serif;
+  --body:"Golos Text", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono:"IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  --r:6px;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#0F1420; --surface:#171E2D; --ink:#E7EBF3; --muted:#9BA5B9; --line:#2B3447;
+  --accent:#8C98FF; --accent-ink:#0F1420; --accent-soft:#222A52; --note:#3A321A; --note-ink:#F1E3B6; color-scheme:dark } }
+:root[data-theme="dark"]{
+  --bg:#0F1420; --surface:#171E2D; --ink:#E7EBF3; --muted:#9BA5B9; --line:#2B3447;
+  --accent:#8C98FF; --accent-ink:#0F1420; --accent-soft:#222A52; --note:#3A321A; --note-ink:#F1E3B6; color-scheme:dark }
+
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.55;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 48px}
+.wrap{max-width:760px;margin:0 auto}
+a{color:var(--accent)}
+[hidden]{display:none!important}
+#profile-form{display:grid;gap:28px}
+.consent{display:flex;gap:10px;align-items:flex-start;font-size:15px;cursor:pointer;max-width:62ch}
+.consent input{width:20px;height:20px;margin:2px 0 0;flex:none;accent-color:var(--accent);cursor:pointer}
+button,input{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+header.top{display:flex;justify-content:space-between;align-items:center;gap:12px;padding-block:18px;flex-wrap:wrap}
+.mark{font-family:var(--mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.lang{display:flex;gap:2px;border:1px solid var(--line);border-radius:var(--r);padding:2px;background:var(--surface)}
+.lang button{border:0;background:none;padding:4px 10px;border-radius:4px;font-family:var(--mono);font-size:12px;cursor:pointer;color:var(--muted)}
+.lang button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+
+.notice{font-size:13.5px;color:var(--muted);border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding-block:10px;margin-bottom:28px}
+
+ol.steps{list-style:none;display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:0;margin:0 0 32px}
+ol.steps li{border-top:3px solid var(--line);padding-top:8px;font-size:13px;color:var(--muted);display:flex;gap:8px;min-width:0}
+ol.steps li .n{font-family:var(--mono)}
+ol.steps li[data-state="on"]{border-color:var(--accent);color:var(--ink);font-weight:500}
+ol.steps li[data-state="done"]{border-color:var(--ink);color:var(--ink)}
+
+h1,h2{font-family:var(--display);font-weight:600;letter-spacing:-.01em;text-wrap:balance;margin:0}
+h1{font-size:clamp(26px,5vw,38px);line-height:1.12}
+h2{font-size:clamp(19px,3.4vw,23px);line-height:1.2}
+.lede{color:var(--muted);max-width:62ch;margin:12px 0 0}
+section.step{display:grid;gap:28px}
+
+fieldset{border:0;padding:0;margin:0;display:grid;gap:10px;min-width:0}
+legend{font-weight:600;margin-bottom:10px;padding:0}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{position:relative}
+.chip input{position:absolute;opacity:0;inset:0;cursor:pointer}
+.chip span{display:inline-block;border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:8px 14px;font-size:15px}
+.chip input:checked + span{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.chip input:focus-visible + span{outline:2px solid var(--accent);outline-offset:2px}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:1px solid var(--ink);background:var(--ink);color:var(--bg);
+  padding:12px 20px;border-radius:var(--r);font-weight:500;cursor:pointer;text-decoration:none;font-size:15px}
+.btn:disabled,.btn[aria-disabled="true"]{opacity:.4;cursor:not-allowed}
+.btn.ghost{background:transparent;color:var(--ink)}
+.hint{font-size:13.5px;color:var(--muted)}
+
+.meta{display:flex;flex-wrap:wrap;gap:6px 18px;font-family:var(--mono);font-size:13px;color:var(--muted);margin-top:14px}
+
+.sheet{background:var(--surface);border:1px solid var(--line);border-radius:var(--r)}
+.sheet h3{font-size:13px;font-family:var(--mono);font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:0;padding:14px 18px;border-bottom:1px solid var(--line)}
+table.tt{width:100%;border-collapse:collapse;font-size:15px}
+table.tt td{padding:10px 18px;border-bottom:1px solid var(--line);vertical-align:top}
+table.tt tr:last-child td{border-bottom:0}
+table.tt td.w{font-family:var(--mono);font-size:13px;color:var(--muted);white-space:nowrap;width:1%;font-variant-numeric:tabular-nums}
+table.tt tr.ai td{background:var(--accent-soft)}
+.tt-wrap{overflow-x:auto}
+
+.roi{background:var(--note);color:var(--note-ink);border-radius:var(--r);padding:18px 20px;display:grid;gap:10px}
+.roi h2{font-size:19px}
+.roi p{margin:0;max-width:64ch}
+.roi .big{font-family:var(--mono);font-size:15px;font-variant-numeric:tabular-nums}
+.roi small{font-size:13px;opacity:.85}
+.roi a{color:inherit}
+
+.tickets{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px}
+.ticket{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:20px;display:flex;flex-direction:column;gap:12px;min-width:0}
+.ticket .kind{font-family:var(--mono);font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.ticket .name{font-weight:600;font-size:17px}
+.ticket .price{font-family:var(--mono);font-size:28px;font-weight:500;font-variant-numeric:tabular-nums;line-height:1}
+.ticket ul{margin:0;padding-left:18px;color:var(--muted);font-size:14.5px;display:grid;gap:4px}
+.ticket .btn{margin-top:auto}
+
+.done{display:grid;gap:18px}
+.code{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.code output{font-family:var(--mono);font-size:20px;letter-spacing:.06em;background:var(--surface);border:1px dashed var(--line);padding:6px 12px;border-radius:var(--r)}
+.preview{font-family:var(--mono);font-size:12px;color:var(--accent);margin-bottom:12px}
+footer{margin-top:40px;font-size:13px;color:var(--muted)}
+@media (prefers-reduced-motion: no-preference){ section.step{animation:in .25s ease-out} @keyframes in{from{opacity:.4;transform:translateY(4px)}to{opacity:1;transform:none}} }
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div class="mark" data-t="brand"></div>
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" data-lang="ru">RU</button>
+      <button type="button" data-lang="en">EN</button>
+      <button type="button" data-lang="es">ES</button>
+    </div>
+  </header>
+  <p class="notice" data-t="notice"></p>
+  <p class="preview" id="preview" hidden></p>
+
+  <ol class="steps">
+    <li id="s1"><span class="n">1</span><span data-t="step1"></span></li>
+    <li id="s2"><span class="n">2</span><span data-t="step2"></span></li>
+    <li id="s3"><span class="n">3</span><span data-t="step3"></span></li>
+  </ol>
+
+  <!-- Step 1: profile -->
+  <section class="step" id="view-profile">
+    <div>
+      <h1 data-t="pTitle"></h1>
+      <p class="lede" data-t="pLede"></p>
+    </div>
+    <form id="profile-form" class="step" novalidate>
+      <fieldset><legend data-t="qRole"></legend><div class="chips" id="role"></div></fieldset>
+      <fieldset><legend data-t="qIncome"></legend><div class="chips" id="income"></div></fieldset>
+      <fieldset><legend data-t="qGoal"></legend><div class="chips" id="goal"></div></fieldset>
+      <label class="consent"><input type="checkbox" id="consent"><span data-t="consent"></span></label>
+      <div style="display:flex;gap:14px;align-items:center;flex-wrap:wrap">
+        <button class="btn" id="to-program" type="button" data-t="next"></button>
+        <span class="hint" id="profile-hint" data-t="fillAll"></span>
+      </div>
+    </form>
+  </section>
+
+  <!-- Step 2: program and choice -->
+  <section class="step" id="view-program" hidden>
+    <div>
+      <h1 data-t="progName"></h1>
+      <p class="lede" data-t="progLede"></p>
+      <div class="meta"><span data-t="m1"></span><span data-t="m2"></span><span data-t="m3"></span><span data-t="m4"></span></div>
+    </div>
+
+    <div class="sheet">
+      <h3 data-t="ttTitle"></h3>
+      <div class="tt-wrap"><table class="tt" id="tt"></table></div>
+    </div>
+
+    <div class="roi" id="roi" hidden>
+      <h2 data-t="roiTitle"></h2>
+      <p id="roi-fact"></p>
+      <p class="big" id="roi-calc"></p>
+      <small data-t="roiNote"></small>
+    </div>
+
+    <div>
+      <h2 data-t="chooseTitle"></h2>
+      <p class="lede" data-t="chooseLede"></p>
+    </div>
+    <div class="tickets">
+      <div class="ticket">
+        <div class="kind" data-t="vA"></div>
+        <div class="name" data-t="vAname"></div>
+        <div class="price" id="priceA"></div>
+        <ul><li data-t="vAinc1"></li><li data-t="vAinc2"></li></ul>
+        <button class="btn ghost" type="button" data-choice="basic" data-t="pick"></button>
+      </div>
+      <div class="ticket">
+        <div class="kind" data-t="vB"></div>
+        <div class="name" data-t="vBname"></div>
+        <div class="price" id="priceB"></div>
+        <ul><li data-t="vAinc1"></li><li data-t="vAinc2"></li><li data-t="vBinc3"></li><li data-t="vBinc4"></li></ul>
+        <button class="btn ghost" type="button" data-choice="ai" data-t="pick"></button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Step 3: hand-off to the survey -->
+  <section class="step" id="view-done" hidden>
+    <div class="done">
+      <div>
+        <h1 data-t="dTitle"></h1>
+        <p class="lede" id="d-choice"></p>
+      </div>
+      <p class="lede" data-t="dLede"></p>
+      <div><a class="btn" id="to-survey" target="_blank" rel="noopener" data-t="toSurvey"></a></div>
+      <p class="hint" id="survey-missing" data-t="surveyMissing" hidden></p>
+      <div>
+        <div class="hint" data-t="codeLabel"></div>
+        <div class="code"><output id="code"></output><button class="btn ghost" type="button" id="copy" data-t="copy"></button></div>
+      </div>
+    </div>
+  </section>
+
+  <footer data-t="footer"></footer>
+</div>
+
+<script>
+/* ===== Settings to fill before launch ===== */
+const SURVEY = {
+  // Paste the Google Forms pre-filled link for each language, exactly as Google gives it
+  // (…/viewform?usp=pp_url&entry.123456789=TEST). The test value is replaced with the participant's code.
+  ru: "https://docs.google.com/forms/d/e/1FAIpQLSeBoNAJ_8x39M7QsyhR9HPoNrpyjC9-7zfv_nYRTVLgichyTw/viewform?usp=pp_url&entry.1150187766=TEST",
+  en: "https://docs.google.com/forms/d/e/1FAIpQLSf9vUEWYCC6bhbDEeGGy3ni-ydleaCNjGbMLhe63netUqVv4w/viewform?usp=pp_url&entry.1336579108=TEST",
+  es: ""   // empty: Spanish speakers get the English form
+};
+/* Source for the T1 argument (PwC, 2025 Global AI Jobs Barometer, press release 3 June 2025) */
+const PWC_URL = "https://www.pwc.com/gx/en/news-room/press-releases/2025/ai-linked-to-a-fourfold-increase-in-productivity-growth.html";
+
+const MONEY = {
+  ru: { base:10000, ai:15000, fmt:n=>new Intl.NumberFormat("ru-RU").format(n)+" ₽" },
+  en: { base:120, ai:180, fmt:n=>"$"+new Intl.NumberFormat("en-US",{maximumFractionDigits:0}).format(n) },
+  es: { base:120, ai:180, fmt:n=>"US$"+new Intl.NumberFormat("es-ES",{maximumFractionDigits:0}).format(n) }
+};
+/* monthly income midpoints for the payback line; 0 = no income */
+const INCOME_MID = { ru:[35000,75000,150000,250000,0], en:[700,1750,3750,6500,0], es:[700,1750,3750,6500,0] };
+
+const T = {
+ru:{
+ brand:"ФТМИ ИТМО · учебный эксперимент",
+ notice:"Это исследовательский прототип ФТМИ ИТМО. Программа условная, платить ничего не нужно. Выбирайте так, как выбрали бы на самом деле.",
+ step1:"Профиль", step2:"Программа", step3:"Анкета",
+ pTitle:"Пара вопросов о вас", pLede:"Ответы помогут показать программу так, как её увидел бы человек в вашей ситуации.",
+ qRole:"Чем вы сейчас занимаетесь?", roles:["Учусь","Работаю специалистом","Руковожу командой","Веду свой бизнес"],
+ qIncome:"Ваш доход в месяц", incomes:["до 50 000 ₽","50–100 тыс. ₽","100–200 тыс. ₽","больше 200 тыс. ₽","Сейчас нет дохода"],
+ qGoal:"Зачем вам бизнес-образование?", goals:["Расти в карьере","Развивать свой бизнес","Принимать решения увереннее","Сменить сферу"],
+ consent:"Мне есть 18 лет, и я участвую в исследовании добровольно",
+ next:"Посмотреть программу", fillAll:"Ответьте на три вопроса и подтвердите согласие",
+ progName:"Интенсив «Управленческие решения»",
+ progLede:"Короткая программа для тех, кто принимает решения в бизнесе: стратегия, деньги, клиенты и команда на реальных кейсах.",
+ m1:"4 недели", m2:"онлайн", m3:"вт и чт, 19:00", m4:"сертификат ФТМИ",
+ ttTitle:"Расписание",
+ tt:[["Нед. 1","Стратегия: где компания зарабатывает и почему"],["Нед. 1","Разбор рынка и конкурентов"],["Нед. 2","Финансы для руководителя: P&L и денежный поток"],["Нед. 2","Цена и юнит-экономика"],["Нед. 3","Клиенты: сегменты и ценностное предложение"],["Нед. 3","Маркетинг и продажи"],["Нед. 4","Команда, роли и делегирование"],["Нед. 4","Защита итогового проекта"]],
+ aiTitle:"ИИ-блок «ИИ-инструменты для управления бизнесом»",
+ ai:[["+ 1","ИИ для анализа рынка и конкурентов"],["+ 2","ИИ для подготовки управленческих решений"],["+ 3","ИИ для отчётов и рутинных задач"],["24/7","ИИ-ассистент по материалам курса: отвечает на вопросы и комментирует задания"]],
+ aiOnly:"только в версии с ИИ-блоком",
+ roiTitle:"Окупится ли доплата за ИИ-блок?",
+ roiFact:p=>`По данным PwC (2025), в 2024 году вакансии, где нужны навыки работы с ИИ, предлагали зарплату в среднем на 56% выше, чем похожие вакансии без этого требования. Компания проанализировала почти миллиард вакансий на шести континентах. <a href="${p}" target="_blank" rel="noopener">Источник</a>`,
+ roiCalc:(extra,monthly,pct)=> pct===null
+   ? `Доплата за ИИ-блок: ${extra}. Она окупится за год, если после программы вы будете зарабатывать хотя бы на ${monthly} в месяц больше.`
+   : `Доплата за ИИ-блок: ${extra}. Она окупится за год, если ваш доход вырастет хотя бы на ${monthly} в месяц. Это около ${pct}% от вашего дохода сейчас.`,
+ roiNote:"Это расчёт точки окупаемости, а не обещание роста дохода.",
+ chooseTitle:"Какую версию вы бы выбрали?", chooseLede:"Выбор один, изменить его потом нельзя.",
+ vA:"Версия 1", vAname:"Базовая", vB:"Версия 2", vBname:"С ИИ-блоком",
+ vAinc1:"8 занятий по расписанию", vAinc2:"итоговый проект и сертификат", vBinc3:"3 занятия ИИ-блока", vBinc4:"ИИ-ассистент на все 4 недели",
+ pick:"Выбрать эту версию",
+ dTitle:"Спасибо, выбор записан", chosen:v=>`Вы выбрали: ${v}.`,
+ dLede:"Последний шаг: анкета о том, как вы оценили программу. Она займёт до 10 минут. Ваш выбор попадёт в исследование, только если вы её заполните.",
+ toSurvey:"Перейти к анкете", surveyMissing:"Ссылка на анкету появится перед запуском исследования.",
+ codeLabel:"Ваш код участника. Если анкета попросит его ввести, скопируйте отсюда:", copy:"Скопировать", copied:"Скопировано",
+ footer:"Исследование НИРМА ФТМИ ИТМО о готовности платить за программы бизнес-образования с ИИ-компонентом. Ответы анонимны и используются только в обобщённом виде.",
+ preview:g=>`Предпросмотр группы: ${g}`
+},
+en:{
+ brand:"ITMO FTMI · research study",
+ notice:"This is a research prototype by ITMO University (FTMI). The program is hypothetical and you will not be asked to pay. Choose the way you really would.",
+ step1:"Profile", step2:"Program", step3:"Survey",
+ pTitle:"A few questions about you", pLede:"Your answers help us show the program the way someone in your situation would see it.",
+ qRole:"What do you do now?", roles:["I study","I work as a specialist","I lead a team","I run my own business"],
+ qIncome:"Your monthly income", incomes:["under $1,000","$1,000–2,500","$2,500–5,000","over $5,000","No income at the moment"],
+ qGoal:"Why do you want business education?", goals:["Grow my career","Grow my business","Make decisions with more confidence","Change field"],
+ consent:"I am 18 or older and I take part in this study voluntarily",
+ next:"See the program", fillAll:"Answer the three questions and confirm your consent",
+ progName:"Managerial Decisions Intensive",
+ progLede:"A short program for people who make business decisions: strategy, money, customers and team, all on real cases.",
+ m1:"4 weeks", m2:"online", m3:"Tue & Thu, 7 pm", m4:"ITMO FTMI certificate",
+ ttTitle:"Schedule",
+ tt:[["Wk 1","Strategy: where the company earns and why"],["Wk 1","Market and competitor review"],["Wk 2","Finance for managers: P&L and cash flow"],["Wk 2","Pricing and unit economics"],["Wk 3","Customers: segments and value proposition"],["Wk 3","Marketing and sales"],["Wk 4","Team, roles and delegation"],["Wk 4","Final project defence"]],
+ aiTitle:"AI block “AI tools for managing a business”",
+ ai:[["+ 1","AI for market and competitor analysis"],["+ 2","AI for preparing management decisions"],["+ 3","AI for reports and routine tasks"],["24/7","AI assistant for the course materials: answers questions and comments on assignments"]],
+ aiOnly:"AI-enhanced version only",
+ roiTitle:"Will the extra cost of the AI block pay off?",
+ roiFact:p=>`According to PwC (2025), in 2024 jobs requiring AI skills offered on average 56% higher pay than similar jobs without that requirement. PwC analysed close to a billion job ads across six continents. <a href="${p}" target="_blank" rel="noopener">Source</a>`,
+ roiCalc:(extra,monthly,pct)=> pct===null
+   ? `The AI block costs ${extra} extra. It pays for itself within a year if after the program you earn at least ${monthly} more per month.`
+   : `The AI block costs ${extra} extra. It pays for itself within a year if your income grows by at least ${monthly} per month. That is about ${pct}% of your current income.`,
+ roiNote:"This is a break-even calculation, not a promise of higher income.",
+ chooseTitle:"Which version would you choose?", chooseLede:"You choose once and cannot change it later.",
+ vA:"Version 1", vAname:"Basic", vB:"Version 2", vBname:"With AI block",
+ vAinc1:"8 scheduled sessions", vAinc2:"final project and certificate", vBinc3:"3 AI block sessions", vBinc4:"AI assistant for all 4 weeks",
+ pick:"Choose this version",
+ dTitle:"Thank you, your choice is saved", chosen:v=>`You chose: ${v}.`,
+ dLede:"Last step: a survey about how you saw the program. It takes up to 10 minutes. Your choice only counts for the study if you complete it.",
+ toSurvey:"Go to the survey", surveyMissing:"The survey link will appear before the study starts.",
+ codeLabel:"Your participant code. If the survey asks for it, copy it from here:", copy:"Copy", copied:"Copied",
+ footer:"NIRMA study at ITMO University (FTMI) on willingness to pay for business programs with an AI component. Answers are anonymous and reported only in aggregate.",
+ preview:g=>`Group preview: ${g}`
+},
+es:{
+ brand:"ITMO FTMI · estudio de investigación",
+ notice:"Este es un prototipo de investigación de la Universidad ITMO (FTMI). El programa es hipotético y no tendrá que pagar nada. Elija como lo haría en la vida real.",
+ step1:"Perfil", step2:"Programa", step3:"Encuesta",
+ pTitle:"Algunas preguntas sobre usted", pLede:"Sus respuestas nos ayudan a mostrar el programa como lo vería alguien en su situación.",
+ qRole:"¿A qué se dedica ahora?", roles:["Estudio","Trabajo como especialista","Dirijo un equipo","Tengo mi propio negocio"],
+ qIncome:"Su ingreso mensual", incomes:["menos de US$1.000","US$1.000–2.500","US$2.500–5.000","más de US$5.000","Ahora no tengo ingresos"],
+ qGoal:"¿Para qué quiere formación en negocios?", goals:["Crecer en mi carrera","Hacer crecer mi negocio","Decidir con más seguridad","Cambiar de área"],
+ consent:"Tengo 18 años o más y participo en este estudio de forma voluntaria",
+ next:"Ver el programa", fillAll:"Responda las tres preguntas y confirme su consentimiento",
+ progName:"Intensivo de Decisiones Gerenciales",
+ progLede:"Un programa corto para quienes toman decisiones de negocio: estrategia, dinero, clientes y equipo con casos reales.",
+ m1:"4 semanas", m2:"en línea", m3:"mar y jue, 19:00", m4:"certificado ITMO FTMI",
+ ttTitle:"Horario",
+ tt:[["Sem. 1","Estrategia: dónde gana la empresa y por qué"],["Sem. 1","Análisis del mercado y la competencia"],["Sem. 2","Finanzas para directivos: P&L y flujo de caja"],["Sem. 2","Precio y economía unitaria"],["Sem. 3","Clientes: segmentos y propuesta de valor"],["Sem. 3","Marketing y ventas"],["Sem. 4","Equipo, roles y delegación"],["Sem. 4","Defensa del proyecto final"]],
+ aiTitle:"Bloque de IA «Herramientas de IA para gestionar un negocio»",
+ ai:[["+ 1","IA para analizar el mercado y la competencia"],["+ 2","IA para preparar decisiones de gestión"],["+ 3","IA para informes y tareas rutinarias"],["24/7","Asistente de IA para los materiales del curso: responde preguntas y comenta las tareas"]],
+ aiOnly:"solo en la versión con IA",
+ roiTitle:"¿Se recupera el costo extra del bloque de IA?",
+ roiFact:p=>`Según PwC (2025), en 2024 los empleos que exigían habilidades de IA ofrecían en promedio un salario 56% más alto que empleos similares sin ese requisito. PwC analizó cerca de mil millones de ofertas de empleo en seis continentes. <a href="${p}" target="_blank" rel="noopener">Fuente</a>`,
+ roiCalc:(extra,monthly,pct)=> pct===null
+   ? `El bloque de IA cuesta ${extra} más. Se recupera en un año si después del programa gana al menos ${monthly} más al mes.`
+   : `El bloque de IA cuesta ${extra} más. Se recupera en un año si su ingreso crece al menos ${monthly} al mes. Eso es cerca del ${pct}% de su ingreso actual.`,
+ roiNote:"Es un cálculo del punto de equilibrio, no una promesa de mayores ingresos.",
+ chooseTitle:"¿Qué versión elegiría?", chooseLede:"Se elige una sola vez y no se puede cambiar después.",
+ vA:"Versión 1", vAname:"Básica", vB:"Versión 2", vBname:"Con bloque de IA",
+ vAinc1:"8 sesiones según el horario", vAinc2:"proyecto final y certificado", vBinc3:"3 sesiones del bloque de IA", vBinc4:"asistente de IA durante las 4 semanas",
+ pick:"Elegir esta versión",
+ dTitle:"Gracias, su elección quedó registrada", chosen:v=>`Usted eligió: ${v}.`,
+ dLede:"Último paso: una encuesta sobre cómo vio el programa. Toma hasta 10 minutos. Su elección solo cuenta para el estudio si la completa.",
+ toSurvey:"Ir a la encuesta", surveyMissing:"El enlace a la encuesta aparecerá antes del inicio del estudio.",
+ codeLabel:"Su código de participante. Si la encuesta lo pide, cópielo de aquí:", copy:"Copiar", copied:"Copiado",
+ footer:"Estudio NIRMA de la Universidad ITMO (FTMI) sobre la disposición a pagar por programas de negocios con un componente de IA. Las respuestas son anónimas y se usan solo de forma agregada.",
+ preview:g=>`Vista previa del grupo: ${g}`
+}};
+
+/* ===== State ===== */
+const KEY = "nirma-wtp-v3";
+function load(){ try{ return JSON.parse(localStorage.getItem(KEY)) || {}; }catch(e){ return {}; } }
+function save(){ try{ localStorage.setItem(KEY, JSON.stringify(S)); }catch(e){} }
+function newId(){
+  const abc="ABCDEFGHJKLMNPQRSTUVWXYZ23456789"; let s="";
+  try{ const a=new Uint32Array(8); crypto.getRandomValues(a); a.forEach(x=>s+=abc[x%abc.length]); }
+  catch(e){ for(let i=0;i<8;i++) s+=abc[Math.floor(Math.random()*abc.length)]; }
+  return s.slice(0,4)+"-"+s.slice(4);
+}
+
+/* hash tokens: language (ru/en/es), forced group (control/t1), reset */
+const tokens = location.hash.slice(1).toLowerCase().split("-").filter(Boolean);
+if (tokens.includes("reset")) {
+  try{ localStorage.removeItem(KEY); }catch(e){}
+  /* drop "reset" from the address so a reload keeps progress */
+  try{ history.replaceState(null, "", location.pathname + location.search + "#" + tokens.filter(x=>x!=="reset").join("-")); }catch(e){}
+}
+let S = tokens.includes("reset") ? {} : load();
+const forced = tokens.includes("t1") ? "t1" : tokens.includes("control") ? "control" : null;
+if (!S.id) S.id = newId();
+if (forced) S.group = forced;
+else if (!S.group) S.group = Math.random() < 0.5 ? "control" : "t1";
+S.lang = ["ru","en","es"].find(l=>tokens.includes(l)) || S.lang || ((navigator.language||"ru").slice(0,2)==="es" ? "es" : (navigator.language||"ru").startsWith("ru") ? "ru" : "en");
+S.profile = S.profile || {};
+save();
+
+/* ===== Render ===== */
+const $ = id => document.getElementById(id);
+function chips(id, name, labels){
+  const box = $(id); box.innerHTML = "";
+  labels.forEach((lab,i)=>{
+    const l = document.createElement("label"); l.className="chip";
+    const inp = document.createElement("input"); inp.type="radio"; inp.name=name; inp.value=String(i); inp.id=name+"-"+i;
+    if (String(S.profile[name])===String(i)) inp.checked = true;
+    inp.addEventListener("change",()=>{ S.profile[name]=i; save(); checkProfile(); });
+    const sp = document.createElement("span"); sp.textContent = lab;
+    l.append(inp, sp); box.append(l);
+  });
+}
+function checkProfile(){
+  const ok = ["role","income","goal"].every(k=>S.profile[k]!==undefined) && S.consent===true;
+  $("to-program").setAttribute("aria-disabled", String(!ok)); $("profile-hint").hidden = ok;
+}
+function timetable(t){
+  const tb = $("tt"); tb.innerHTML = "";
+  t.tt.forEach(([w,topic])=>{ const tr=document.createElement("tr"); tr.innerHTML=`<td class="w"></td><td></td>`; tr.cells[0].textContent=w; tr.cells[1].textContent=topic; tb.append(tr); });
+  const head=document.createElement("tr"); head.className="ai"; head.innerHTML=`<td class="w"></td><td><strong></strong> <span class="hint"></span></td>`;
+  head.cells[0].textContent="AI"; head.querySelector("strong").textContent=t.aiTitle; head.querySelector(".hint").textContent="· "+t.aiOnly; tb.append(head);
+  t.ai.forEach(([w,topic])=>{ const tr=document.createElement("tr"); tr.className="ai"; tr.innerHTML=`<td class="w"></td><td></td>`; tr.cells[0].textContent=w; tr.cells[1].textContent=topic; tb.append(tr); });
+}
+function roi(t){
+  const show = S.group === "t1";
+  $("roi").hidden = !show; if(!show) return;
+  const m = MONEY[S.lang]; const extra = m.ai - m.base; const monthly = extra/12;
+  const inc = INCOME_MID[S.lang][S.profile.income ?? 4] || 0;
+  const pct = inc ? (monthly/inc*100) : null;
+  const pctTxt = pct===null ? null : new Intl.NumberFormat(S.lang==="en"?"en-US":S.lang==="es"?"es-ES":"ru-RU",{maximumFractionDigits:1}).format(pct);
+  $("roi-fact").innerHTML = t.roiFact(PWC_URL);
+  $("roi-calc").textContent = t.roiCalc(m.fmt(extra), m.fmt(Math.ceil(monthly)), pctTxt);
+}
+/* One code goes to the form: ID-GC-lang-RIG
+   G = group (0 control, 1 T1), C = choice (0 basic, 1 AI), R/I/G = profile answers (index from 0) */
+function surveyCode(){
+  const p = S.profile, v = k => (p[k]===undefined ? "x" : String(p[k]));
+  return [S.id, (S.group==="t1"?"1":"0")+(S.choice==="ai"?"1":S.choice==="basic"?"0":"x"), S.lang, v("role")+v("income")+v("goal")].join("-");
+}
+function surveyLink(){
+  const a = $("to-survey");
+  const raw = SURVEY[S.lang] || (S.lang==="es" ? SURVEY.en : "");
+  let u = null;
+  try { u = raw ? new URL(raw) : null; } catch(e) { u = null; }
+  if (!u) { a.removeAttribute("href"); a.setAttribute("aria-disabled","true"); $("survey-missing").hidden=false; return; }
+  const key = [...u.searchParams.keys()].find(k=>k.startsWith("entry."));
+  if (key) u.searchParams.set(key, surveyCode());
+  a.href = u.toString(); a.removeAttribute("aria-disabled"); $("survey-missing").hidden=true;
+}
+function view(){
+  const step = S.choice ? 3 : S.atProgram ? 2 : 1;
+  $("view-profile").hidden = step!==1; $("view-program").hidden = step!==2; $("view-done").hidden = step!==3;
+  ["s1","s2","s3"].forEach((id,i)=>$(id).dataset.state = i+1<step ? "done" : i+1===step ? "on" : "");
+}
+function render(){
+  const t = T[S.lang]; document.documentElement.lang = S.lang;
+  document.title = t.progName;
+  document.querySelectorAll("[data-t]").forEach(el=>{ const v=t[el.dataset.t]; if(typeof v==="string") el.textContent=v; });
+  document.querySelectorAll("[data-lang]").forEach(b=>b.setAttribute("aria-pressed", String(b.dataset.lang===S.lang)));
+  chips("role","role",t.roles); chips("income","income",t.incomes); chips("goal","goal",t.goals); $("consent").checked = S.consent===true; checkProfile();
+  timetable(t); roi(t);
+  $("priceA").textContent = MONEY[S.lang].fmt(MONEY[S.lang].base);
+  $("priceB").textContent = MONEY[S.lang].fmt(MONEY[S.lang].ai);
+  if (S.choice) $("d-choice").textContent = t.chosen(S.choice==="ai" ? t.vBname : t.vAname);
+  $("code").textContent = S.id;
+  $("preview").hidden = !forced; if (forced) $("preview").textContent = t.preview(forced === "t1" ? "T1 (ROI)" : "control");
+  surveyLink(); view();
+}
+
+/* ===== Events ===== */
+document.querySelectorAll("[data-lang]").forEach(b=>b.addEventListener("click",()=>{
+  S.lang = b.dataset.lang; save();
+  const keep = tokens.filter(x=>x==="t1"||x==="control");
+  location.hash = [S.lang, ...keep].join("-");
+  render();
+}));
+$("consent").addEventListener("change",e=>{ S.consent = e.target.checked; save(); checkProfile(); });
+function goProgram(e){ if(e) e.preventDefault(); const miss=["role","income","goal"].find(k=>S.profile[k]===undefined); if(miss || S.consent!==true){ const h=$("profile-hint"); h.hidden=false; h.style.color="var(--accent)"; h.style.fontWeight="600"; const el = miss ? document.querySelector("#"+miss+" input") : $("consent"); el.scrollIntoView({block:"center"}); el.focus(); return; } S.atProgram=true; save(); render(); window.scrollTo(0,0); }
+$("to-program").addEventListener("click", goProgram);
+$("profile-form").addEventListener("submit", goProgram);
+document.querySelectorAll("[data-choice]").forEach(b=>b.addEventListener("click",()=>{
+  if (S.choice) return;
+  S.choice = b.dataset.choice; S.chosenAt = new Date().toISOString(); save(); render(); window.scrollTo(0,0);
+}));
+$("copy").addEventListener("click",()=>{
+  const t=T[S.lang]; const done=()=>{ $("copy").textContent=t.copied; setTimeout(()=>$("copy").textContent=t.copy,1500); };
+  if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(S.id).then(done,()=>selectCode());
+  else selectCode();
+});
+function selectCode(){ const r=document.createRange(); r.selectNodeContents($("code")); const s=getSelection(); s.removeAllRanges(); s.addRange(r); }
+render();
+</script>
