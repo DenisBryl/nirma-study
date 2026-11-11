@@ -30,6 +30,18 @@ body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16p
 a{color:var(--accent)}
 [hidden]{display:none!important}
 #profile-form{display:grid;gap:28px}
+.mot{display:grid;gap:16px}
+.mrow{display:grid;gap:6px;min-width:0}
+.mlab{font-size:15px}
+.scale7{display:flex;gap:4px}
+.scale7 label{flex:1;position:relative;min-width:0}
+.scale7 input{position:absolute;opacity:0;inset:0;margin:0;cursor:pointer}
+.scale7 span{display:block;text-align:center;border:1px solid var(--line);background:var(--surface);border-radius:var(--r);padding:8px 0;font-family:var(--mono);font-size:14px;font-variant-numeric:tabular-nums}
+.scale7 input:checked + span{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.scale7 input:focus-visible + span{outline:2px solid var(--accent);outline-offset:2px}
+.ends{display:flex;justify-content:space-between;gap:12px;font-size:12.5px;color:var(--muted)}
+.other-input{border:1px solid var(--line);background:var(--surface);border-radius:var(--r);padding:10px 12px;width:100%;max-width:440px;box-sizing:border-box}
+.qhint{font-size:13.5px;color:var(--muted);margin:-4px 0 4px}
 .consent{display:flex;gap:10px;align-items:flex-start;font-size:15px;cursor:pointer;max-width:62ch}
 .consent input{width:20px;height:20px;margin:2px 0 0;flex:none;accent-color:var(--accent);cursor:pointer}
 button,input{font:inherit;color:inherit}
@@ -130,8 +142,12 @@ footer{margin-top:40px;font-size:13px;color:var(--muted)}
     </div>
     <form id="profile-form" class="step" novalidate>
       <fieldset><legend data-t="qRole"></legend><div class="chips" id="role"></div></fieldset>
+      <fieldset><legend data-t="qProg"></legend><p class="qhint" data-t="qProgHint"></p><div class="chips" id="prog"></div>
+        <input type="text" id="prog-other" class="other-input" maxlength="80" autocomplete="off" hidden></fieldset>
       <fieldset><legend data-t="qIncome"></legend><div class="chips" id="income"></div></fieldset>
-      <fieldset><legend data-t="qGoal"></legend><div class="chips" id="goal"></div></fieldset>
+      <fieldset><legend data-t="qMot"></legend><p class="qhint" data-t="qMotHint"></p>
+        <div class="ends" aria-hidden="true"><span id="mot-lo"></span><span id="mot-hi"></span></div>
+        <div class="mot" id="mot"></div></fieldset>
       <label class="consent"><input type="checkbox" id="consent"><span data-t="consent"></span></label>
       <div style="display:flex;gap:14px;align-items:center;flex-wrap:wrap">
         <button class="btn" id="to-program" type="button" data-t="next"></button>
@@ -227,12 +243,15 @@ ru:{
  brand:"ФТМИ ИТМО · учебный эксперимент",
  notice:"Это исследовательский прототип ФТМИ ИТМО. Программа условная, платить ничего не нужно. Выбирайте так, как выбрали бы на самом деле.",
  step1:"Профиль", step2:"Программа", step3:"Анкета",
- pTitle:"Пара вопросов о вас", pLede:"Ответы помогут показать программу так, как её увидел бы человек в вашей ситуации.",
+ pTitle:"Несколько вопросов о вас", pLede:"Ответы помогут показать программу так, как её увидел бы человек в вашей ситуации.",
  qRole:"Чем вы сейчас занимаетесь?", roles:["Учусь","Работаю специалистом","Руковожу командой","Веду свой бизнес"],
  qIncome:"Ваш доход в месяц", incomes:["до 50 000 ₽","50–100 тыс. ₽","100–200 тыс. ₽","больше 200 тыс. ₽","Сейчас нет дохода"],
- qGoal:"Зачем вам бизнес-образование?", goals:["Расти в карьере","Развивать свой бизнес","Принимать решения увереннее","Сменить сферу"],
+ qProg:"На какой программе или курсе по бизнесу и управлению вы сейчас учитесь?", qProgHint:"Можно выбрать несколько вариантов.",
+ progs:["Короткий курс или интенсив","Программа повышения квалификации","Программа профессиональной переподготовки","MBA или Executive MBA","Магистратура по бизнесу или управлению","Бакалавриат по бизнесу или управлению","Другое","Сейчас не учусь"], progOtherPh:"Укажите программу",
+ qMot:"Чего вы хотите достичь с помощью обучения бизнесу и управлению?", qMotHint:"Оцените каждый пункт от 1 до 7.", motLo:"1 = совсем не важно", motHi:"7 = очень важно",
+ mots:["Развить аналитические способности","Больше узнать об управлении бизнесом","Освоить практические методы управления","Лучше справляться с текущей работой","Расширить возможности для смены карьеры","Завести новые деловые контакты","Увеличить доход","Получить диплом / сертификат"],
  consent:"Мне есть 18 лет, и я участвую в исследовании добровольно",
- next:"Посмотреть программу", fillAll:"Ответьте на три вопроса и подтвердите согласие",
+ next:"Посмотреть программу", fillAll:"Ответьте на все вопросы и подтвердите согласие",
  progName:"Интенсив «Управленческие решения»",
  progLede:"Короткая программа для тех, кто принимает решения в бизнесе: стратегия, деньги, клиенты и команда на реальных кейсах.",
  m1:"4 недели", m2:"онлайн", m3:"вт и чт, 19:00", m4:"сертификат ФТМИ",
@@ -265,9 +284,12 @@ en:{
  pTitle:"A few questions about you", pLede:"Your answers help us show the program the way someone in your situation would see it.",
  qRole:"What do you do now?", roles:["I study","I work as a specialist","I lead a team","I run my own business"],
  qIncome:"Your monthly income", incomes:["under $1,000","$1,000–2,500","$2,500–5,000","over $5,000","No income at the moment"],
- qGoal:"Why do you want business education?", goals:["Grow my career","Grow my business","Make decisions with more confidence","Change field"],
+ qProg:"Which business or management programme or course are you studying on now?", qProgHint:"You can choose more than one.",
+ progs:["Short course or intensive","Professional development programme","Professional retraining programme","MBA or Executive MBA","Master’s in business or management","Bachelor’s in business or management","Other","I am not studying now"], progOtherPh:"Please specify the programme",
+ qMot:"What do you want to achieve through business and management education?", qMotHint:"Rate each item from 1 to 7.", motLo:"1 = not important at all", motHi:"7 = very important",
+ mots:["Improve my analytical ability","Learn more about business management","Learn practical approaches to business management","Become better at my current job","Get better prospects of switching career path","Make new business contacts","Make more money","Get a degree or certificate"],
  consent:"I am 18 or older and I take part in this study voluntarily",
- next:"See the program", fillAll:"Answer the three questions and confirm your consent",
+ next:"See the program", fillAll:"Answer all the questions and confirm your consent",
  progName:"Managerial Decisions Intensive",
  progLede:"A short program for people who make business decisions: strategy, money, customers and team, all on real cases.",
  m1:"4 weeks", m2:"online", m3:"Tue & Thu, 7 pm", m4:"ITMO FTMI certificate",
@@ -300,9 +322,12 @@ es:{
  pTitle:"Algunas preguntas sobre usted", pLede:"Sus respuestas nos ayudan a mostrar el programa como lo vería alguien en su situación.",
  qRole:"¿A qué se dedica ahora?", roles:["Estudio","Trabajo como especialista","Dirijo un equipo","Tengo mi propio negocio"],
  qIncome:"Su ingreso mensual", incomes:["menos de US$1.000","US$1.000–2.500","US$2.500–5.000","más de US$5.000","Ahora no tengo ingresos"],
- qGoal:"¿Para qué quiere formación en negocios?", goals:["Crecer en mi carrera","Hacer crecer mi negocio","Decidir con más seguridad","Cambiar de área"],
+ qProg:"¿En qué programa o curso de negocios y gestión estudia actualmente?", qProgHint:"Puede elegir varias opciones.",
+ progs:["Curso corto o intensivo","Programa de actualización profesional","Programa de reconversión profesional","MBA o Executive MBA","Máster en negocios o gestión","Grado en negocios o gestión","Otro","Ahora no estudio"], progOtherPh:"Indique el programa",
+ qMot:"¿Qué quiere lograr con la formación en negocios y gestión?", qMotHint:"Valore cada punto del 1 al 7.", motLo:"1 = nada importante", motHi:"7 = muy importante",
+ mots:["Mejorar mi capacidad analítica","Aprender más sobre gestión empresarial","Aprender enfoques prácticos de gestión empresarial","Desempeñar mejor mi trabajo actual","Tener mejores perspectivas para cambiar de carrera","Hacer nuevos contactos de negocios","Ganar más dinero","Obtener un título o certificado"],
  consent:"Tengo 18 años o más y participo en este estudio de forma voluntaria",
- next:"Ver el programa", fillAll:"Responda las tres preguntas y confirme su consentimiento",
+ next:"Ver el programa", fillAll:"Responda todas las preguntas y confirme su consentimiento",
  progName:"Intensivo de Decisiones Gerenciales",
  progLede:"Un programa corto para quienes toman decisiones de negocio: estrategia, dinero, clientes y equipo con casos reales.",
  m1:"4 semanas", m2:"en línea", m3:"mar y jue, 19:00", m4:"certificado ITMO FTMI",
@@ -330,7 +355,8 @@ es:{
 }};
 
 /* ===== State ===== */
-const KEY = "nirma-wtp-v3";
+const KEY = "nirma-wtp-v4";
+const OTHER = 6, NONE = 7;   /* indexes in the programme list */
 function load(){ try{ return JSON.parse(localStorage.getItem(KEY)) || {}; }catch(e){ return {}; } }
 function save(){ try{ localStorage.setItem(KEY, JSON.stringify(S)); }catch(e){} }
 function newId(){
@@ -369,8 +395,59 @@ function chips(id, name, labels){
     l.append(inp, sp); box.append(l);
   });
 }
+function progChips(labels){
+  const box = $("prog"); box.innerHTML = "";
+  labels.forEach((lab,i)=>{
+    const l = document.createElement("label"); l.className="chip";
+    const inp = document.createElement("input"); inp.type="checkbox"; inp.value=String(i); inp.id="prog-"+i;
+    inp.addEventListener("change",()=>{
+      let cur = new Set(S.profile.prog || []);
+      if (inp.checked) { if (i===NONE) cur = new Set([NONE]); else { cur.delete(NONE); cur.add(i); } } else cur.delete(i);
+      S.profile.prog = [...cur].sort((a,b)=>a-b); save(); syncProg(); checkProfile();
+      if (i===OTHER && inp.checked) $("prog-other").focus();
+    });
+    const sp = document.createElement("span"); sp.textContent = lab;
+    l.append(inp, sp); box.append(l);
+  });
+  syncProg();
+}
+function syncProg(){
+  const sel = S.profile.prog || [];
+  document.querySelectorAll("#prog input").forEach(x=>x.checked = sel.includes(+x.value));
+  $("prog-other").hidden = !sel.includes(OTHER);
+}
+function motives(labels){
+  const box = $("mot"); box.innerHTML = "";
+  const cur = S.profile.mot || [];
+  labels.forEach((lab,k)=>{
+    const row = document.createElement("div"); row.className="mrow"; row.setAttribute("role","radiogroup"); row.setAttribute("aria-labelledby","mot-l-"+k);
+    const lb = document.createElement("div"); lb.className="mlab"; lb.id="mot-l-"+k; lb.textContent = lab;
+    const sc = document.createElement("div"); sc.className="scale7";
+    for (let v=1; v<=7; v++){
+      const l = document.createElement("label");
+      const inp = document.createElement("input"); inp.type="radio"; inp.name="mot-"+k; inp.value=String(v); inp.id="mot-"+k+"-"+v;
+      inp.setAttribute("aria-label", lab+": "+v);
+      if (cur[k]===v) inp.checked = true;
+      inp.addEventListener("change",()=>{ const m = (S.profile.mot || []).slice(); while (m.length<labels.length) m.push(null); m[k]=v; S.profile.mot=m; save(); checkProfile(); });
+      const sp = document.createElement("span"); sp.textContent = String(v);
+      l.append(inp, sp); sc.append(l);
+    }
+    row.append(lb, sc); box.append(row);
+  });
+}
+/* first unanswered item in the order it appears on screen, or null */
+function missing(){
+  const p = S.profile, prog = p.prog || [], mot = p.mot || [];
+  if (p.role===undefined) return "role";
+  if (!prog.length) return "prog";
+  if (prog.includes(OTHER) && !(p.progOther||"").trim()) return "prog-other";
+  if (p.income===undefined) return "income";
+  for (let k=0; k<8; k++) if (!mot[k]) return "mot-"+k;
+  if (S.consent!==true) return "consent";
+  return null;
+}
 function checkProfile(){
-  const ok = ["role","income","goal"].every(k=>S.profile[k]!==undefined) && S.consent===true;
+  const ok = missing()===null;
   $("to-program").setAttribute("aria-disabled", String(!ok)); $("profile-hint").hidden = ok;
 }
 function timetable(t){
@@ -390,11 +467,17 @@ function roi(t){
   $("roi-fact").innerHTML = t.roiFact(PWC_URL);
   $("roi-calc").textContent = t.roiCalc(m.fmt(extra), m.fmt(Math.ceil(monthly)), pctTxt);
 }
-/* One code goes to the form: ID-GC-lang-RIG
-   G = group (0 control, 1 T1), C = choice (0 basic, 1 AI), R/I/G = profile answers (index from 0) */
+/* One code goes to the form: ID-GC-lang-RI-MMMMMMMM-PPPPPPPP[~other programme]
+   G = group (0 control, 1 T1), C = choice (0 basic, 1 AI), R = role (0-3), I = income (0-4),
+   M = 8 motive ratings 1-7 (Thompson & Gui, 2000), P = 8 programme flags 0/1 (AMBA & BGA, 2023) */
 function surveyCode(){
-  const p = S.profile, v = k => (p[k]===undefined ? "x" : String(p[k]));
-  return [S.id, (S.group==="t1"?"1":"0")+(S.choice==="ai"?"1":S.choice==="basic"?"0":"x"), S.lang, v("role")+v("income")+v("goal")].join("-");
+  const p = S.profile, d = v => (v===undefined || v===null ? "x" : String(v));
+  const mot = Array.from({length:8},(_,k)=>d((p.mot||[])[k])).join("");
+  const prog = Array.from({length:8},(_,k)=>(p.prog||[]).includes(k) ? "1" : "0").join("");
+  let code = [S.id, (S.group==="t1"?"1":"0")+(S.choice==="ai"?"1":S.choice==="basic"?"0":"x"), S.lang, d(p.role)+d(p.income), mot, prog].join("-");
+  const other = (p.prog||[]).includes(OTHER) ? (p.progOther||"").replace(/[~\s]+/g," ").trim().slice(0,80) : "";
+  if (other) code += "~" + other;
+  return code;
 }
 function surveyLink(){
   const a = $("to-survey");
@@ -416,7 +499,9 @@ function render(){
   document.title = t.progName;
   document.querySelectorAll("[data-t]").forEach(el=>{ const v=t[el.dataset.t]; if(typeof v==="string") el.textContent=v; });
   document.querySelectorAll("[data-lang]").forEach(b=>b.setAttribute("aria-pressed", String(b.dataset.lang===S.lang)));
-  chips("role","role",t.roles); chips("income","income",t.incomes); chips("goal","goal",t.goals); $("consent").checked = S.consent===true; checkProfile();
+  chips("role","role",t.roles); progChips(t.progs); chips("income","income",t.incomes); motives(t.mots);
+  $("prog-other").placeholder = t.progOtherPh; $("prog-other").value = S.profile.progOther || ""; $("mot-lo").textContent = t.motLo; $("mot-hi").textContent = t.motHi;
+  $("consent").checked = S.consent===true; checkProfile();
   timetable(t); roi(t);
   $("priceA").textContent = MONEY[S.lang].fmt(MONEY[S.lang].base);
   $("priceB").textContent = MONEY[S.lang].fmt(MONEY[S.lang].ai);
@@ -434,7 +519,17 @@ document.querySelectorAll("[data-lang]").forEach(b=>b.addEventListener("click",(
   render();
 }));
 $("consent").addEventListener("change",e=>{ S.consent = e.target.checked; save(); checkProfile(); });
-function goProgram(e){ if(e) e.preventDefault(); const miss=["role","income","goal"].find(k=>S.profile[k]===undefined); if(miss || S.consent!==true){ const h=$("profile-hint"); h.hidden=false; h.style.color="var(--accent)"; h.style.fontWeight="600"; const el = miss ? document.querySelector("#"+miss+" input") : $("consent"); el.scrollIntoView({block:"center"}); el.focus(); return; } S.atProgram=true; save(); render(); window.scrollTo(0,0); }
+$("prog-other").addEventListener("input",e=>{ S.profile.progOther = e.target.value; save(); checkProfile(); });
+function goProgram(e){
+  if(e) e.preventDefault();
+  const miss = missing();
+  if (miss){
+    const h=$("profile-hint"); h.hidden=false; h.style.color="var(--accent)"; h.style.fontWeight="600";
+    const el = miss==="consent" ? $("consent") : miss==="prog-other" ? $("prog-other") : miss.startsWith("mot-") ? $(miss+"-1") : document.querySelector("#"+miss+" input");
+    el.scrollIntoView({block:"center"}); el.focus(); return;
+  }
+  S.atProgram=true; save(); render(); window.scrollTo(0,0);
+}
 $("to-program").addEventListener("click", goProgram);
 $("profile-form").addEventListener("submit", goProgram);
 document.querySelectorAll("[data-choice]").forEach(b=>b.addEventListener("click",()=>{
