@@ -91,6 +91,8 @@ table.tt td{padding:10px 18px;border-bottom:1px solid var(--line);vertical-align
 table.tt tr:last-child td{border-bottom:0}
 table.tt td.w{font-family:var(--mono);font-size:13px;color:var(--muted);white-space:nowrap;width:1%;font-variant-numeric:tabular-nums}
 table.tt tr.ai td{background:var(--accent-soft)}
+.ailine{display:block;margin-top:6px;font-size:13.5px;line-height:1.45;background:var(--accent-soft);border-radius:4px;padding:4px 8px}
+.ailine b{font-weight:600}
 .tt-wrap{overflow-x:auto}
 
 .roi{background:var(--note);color:var(--note-ink);border-radius:var(--r);padding:18px 20px;display:grid;gap:10px}
@@ -190,9 +192,9 @@ footer{margin-top:40px;font-size:13px;color:var(--muted)}
       </div>
       <div class="ticket">
         <div class="kind" data-t="vB"></div>
-        <div class="name" data-t="vBname"></div>
+        <div class="name" id="vB-name"></div>
         <div class="price" id="priceB"></div>
-        <ul><li data-t="vAinc1"></li><li data-t="vAinc2"></li><li data-t="vBinc3"></li><li data-t="vBinc4"></li></ul>
+        <ul><li data-t="vAinc1"></li><li data-t="vAinc2"></li><li id="vB-inc3"></li><li data-t="vBinc4"></li></ul>
         <button class="btn ghost" type="button" data-choice="ai" data-t="pick"></button>
       </div>
     </div>
@@ -230,8 +232,15 @@ const SURVEY = {
 /* Source for the T1 argument (PwC, 2025 Global AI Jobs Barometer, press release 3 June 2025) */
 const PWC_URL = "https://www.pwc.com/gx/en/news-room/press-releases/2025/ai-linked-to-a-fourfold-increase-in-productivity-growth.html";
 
+/* Experimental groups (randomised 1/3 each):
+   control — program and prices only; the AI version is a separate AI block
+   t1      — as control + ROI argument (PwC 2025) and a payback calculation
+   uoai    — same AI topics, but built into every session instead of a separate block (depth of AI integration) */
+const GROUPS = ["control", "t1", "uoai"];
+const GROUP_DIGIT = { control: "0", t1: "1", uoai: "2" };
+
 const MONEY = {
-  ru: { base:10000, ai:15000, fmt:n=>new Intl.NumberFormat("ru-RU").format(n)+" ₽" },
+  ru: { base:10000, ai:15000, fmt:n=>new Intl.NumberFormat("ru-RU").format(n)+" ₽" },
   en: { base:120, ai:180, fmt:n=>"$"+new Intl.NumberFormat("en-US",{maximumFractionDigits:0}).format(n) },
   es: { base:120, ai:180, fmt:n=>"US$"+new Intl.NumberFormat("es-ES",{maximumFractionDigits:0}).format(n) }
 };
@@ -260,6 +269,10 @@ ru:{
  aiTitle:"ИИ-блок «ИИ-инструменты для управления бизнесом»",
  ai:[["+ 1","ИИ для анализа рынка и конкурентов"],["+ 2","ИИ для подготовки управленческих решений"],["+ 3","ИИ для отчётов и рутинных задач"],["24/7","ИИ-ассистент по материалам курса: отвечает на вопросы и комментирует задания"]],
  aiOnly:"только в версии с ИИ-блоком",
+ vBname:"С ИИ-блоком", vBinc3:"3 занятия ИИ-блока",
+ u_aiTitle:"ИИ встроен в каждое занятие", u_aiOnly:"только в версии с ИИ", u_aiPrefix:"В версии с ИИ:",
+ u_ai:["ИИ помогает разобрать бизнес-модели компаний","ИИ собирает и сравнивает данные о рынке и конкурентах","ИИ строит и проверяет финансовую модель","ИИ считает сценарии цены и юнит-экономики","ИИ анализирует отзывы и находит сегменты клиентов","ИИ помогает готовить и тестировать маркетинговые тексты","ИИ помогает планировать задачи и распределять роли","ИИ даёт обратную связь на проект до защиты"],
+ u_vBname:"С ИИ в каждом занятии", u_vBinc3:"ИИ-практика во всех 8 занятиях",
  roiTitle:"Окупится ли доплата за ИИ-блок?",
  roiFact:p=>`По данным PwC (2025), в 2024 году вакансии, где нужны навыки работы с ИИ, предлагали зарплату в среднем на 56% выше, чем похожие вакансии без этого требования. Компания проанализировала почти миллиард вакансий на шести континентах. <a href="${p}" target="_blank" rel="noopener">Источник</a>`,
  roiCalc:(extra,monthly,pct)=> pct===null
@@ -267,8 +280,8 @@ ru:{
    : `Доплата за ИИ-блок: ${extra}. Она окупится за год, если ваш доход вырастет хотя бы на ${monthly} в месяц. Это около ${pct}% от вашего дохода сейчас.`,
  roiNote:"Это расчёт точки окупаемости, а не обещание роста дохода.",
  chooseTitle:"Какую версию вы бы выбрали?", chooseLede:"Выбор один, изменить его потом нельзя.",
- vA:"Версия 1", vAname:"Базовая", vB:"Версия 2", vBname:"С ИИ-блоком",
- vAinc1:"8 занятий по расписанию", vAinc2:"итоговый проект и сертификат", vBinc3:"3 занятия ИИ-блока", vBinc4:"ИИ-ассистент на все 4 недели",
+ vA:"Версия 1", vAname:"Базовая", vB:"Версия 2",
+ vAinc1:"8 занятий по расписанию", vAinc2:"итоговый проект и сертификат", vBinc4:"ИИ-ассистент на все 4 недели",
  pick:"Выбрать эту версию",
  dTitle:"Спасибо, выбор записан", chosen:v=>`Вы выбрали: ${v}.`,
  dLede:"Последний шаг: анкета о том, как вы оценили программу. Она займёт до 10 минут. Ваш выбор попадёт в исследование, только если вы её заполните.",
@@ -298,6 +311,10 @@ en:{
  aiTitle:"AI block “AI tools for managing a business”",
  ai:[["+ 1","AI for market and competitor analysis"],["+ 2","AI for preparing management decisions"],["+ 3","AI for reports and routine tasks"],["24/7","AI assistant for the course materials: answers questions and comments on assignments"]],
  aiOnly:"AI-enhanced version only",
+ vBname:"With AI block", vBinc3:"3 AI block sessions",
+ u_aiTitle:"AI built into every session", u_aiOnly:"AI version only", u_aiPrefix:"In the AI version:",
+ u_ai:["AI helps break down companies’ business models","AI gathers and compares market and competitor data","AI builds and checks the financial model","AI runs pricing and unit-economics scenarios","AI analyses reviews and finds customer segments","AI helps draft and test marketing copy","AI helps plan tasks and assign roles","AI gives feedback on your project before the defence"],
+ u_vBname:"With AI in every session", u_vBinc3:"AI practice in all 8 sessions",
  roiTitle:"Will the extra cost of the AI block pay off?",
  roiFact:p=>`According to PwC (2025), in 2024 jobs requiring AI skills offered on average 56% higher pay than similar jobs without that requirement. PwC analysed close to a billion job ads across six continents. <a href="${p}" target="_blank" rel="noopener">Source</a>`,
  roiCalc:(extra,monthly,pct)=> pct===null
@@ -305,8 +322,8 @@ en:{
    : `The AI block costs ${extra} extra. It pays for itself within a year if your income grows by at least ${monthly} per month. That is about ${pct}% of your current income.`,
  roiNote:"This is a break-even calculation, not a promise of higher income.",
  chooseTitle:"Which version would you choose?", chooseLede:"You choose once and cannot change it later.",
- vA:"Version 1", vAname:"Basic", vB:"Version 2", vBname:"With AI block",
- vAinc1:"8 scheduled sessions", vAinc2:"final project and certificate", vBinc3:"3 AI block sessions", vBinc4:"AI assistant for all 4 weeks",
+ vA:"Version 1", vAname:"Basic", vB:"Version 2",
+ vAinc1:"8 scheduled sessions", vAinc2:"final project and certificate", vBinc4:"AI assistant for all 4 weeks",
  pick:"Choose this version",
  dTitle:"Thank you, your choice is saved", chosen:v=>`You chose: ${v}.`,
  dLede:"Last step: a survey about how you saw the program. It takes up to 10 minutes. Your choice only counts for the study if you complete it.",
@@ -336,6 +353,10 @@ es:{
  aiTitle:"Bloque de IA «Herramientas de IA para gestionar un negocio»",
  ai:[["+ 1","IA para analizar el mercado y la competencia"],["+ 2","IA para preparar decisiones de gestión"],["+ 3","IA para informes y tareas rutinarias"],["24/7","Asistente de IA para los materiales del curso: responde preguntas y comenta las tareas"]],
  aiOnly:"solo en la versión con IA",
+ vBname:"Con bloque de IA", vBinc3:"3 sesiones del bloque de IA",
+ u_aiTitle:"IA integrada en cada sesión", u_aiOnly:"solo en la versión con IA", u_aiPrefix:"En la versión con IA:",
+ u_ai:["La IA ayuda a analizar modelos de negocio de empresas","La IA reúne y compara datos del mercado y la competencia","La IA construye y revisa el modelo financiero","La IA calcula escenarios de precio y economía unitaria","La IA analiza reseñas y encuentra segmentos de clientes","La IA ayuda a redactar y probar textos de marketing","La IA ayuda a planificar tareas y asignar roles","La IA comenta su proyecto antes de la defensa"],
+ u_vBname:"Con IA en cada sesión", u_vBinc3:"práctica con IA en las 8 sesiones",
  roiTitle:"¿Se recupera el costo extra del bloque de IA?",
  roiFact:p=>`Según PwC (2025), en 2024 los empleos que exigían habilidades de IA ofrecían en promedio un salario 56% más alto que empleos similares sin ese requisito. PwC analizó cerca de mil millones de ofertas de empleo en seis continentes. <a href="${p}" target="_blank" rel="noopener">Fuente</a>`,
  roiCalc:(extra,monthly,pct)=> pct===null
@@ -343,8 +364,8 @@ es:{
    : `El bloque de IA cuesta ${extra} más. Se recupera en un año si su ingreso crece al menos ${monthly} al mes. Eso es cerca del ${pct}% de su ingreso actual.`,
  roiNote:"Es un cálculo del punto de equilibrio, no una promesa de mayores ingresos.",
  chooseTitle:"¿Qué versión elegiría?", chooseLede:"Se elige una sola vez y no se puede cambiar después.",
- vA:"Versión 1", vAname:"Básica", vB:"Versión 2", vBname:"Con bloque de IA",
- vAinc1:"8 sesiones según el horario", vAinc2:"proyecto final y certificado", vBinc3:"3 sesiones del bloque de IA", vBinc4:"asistente de IA durante las 4 semanas",
+ vA:"Versión 1", vAname:"Básica", vB:"Versión 2",
+ vAinc1:"8 sesiones según el horario", vAinc2:"proyecto final y certificado", vBinc4:"asistente de IA durante las 4 semanas",
  pick:"Elegir esta versión",
  dTitle:"Gracias, su elección quedó registrada", chosen:v=>`Usted eligió: ${v}.`,
  dLede:"Último paso: una encuesta sobre cómo vio el programa. Toma hasta 10 minutos. Su elección solo cuenta para el estudio si la completa.",
@@ -355,7 +376,7 @@ es:{
 }};
 
 /* ===== State ===== */
-const KEY = "nirma-wtp-v4";
+const KEY = "nirma-wtp-v5";
 const OTHER = 6, NONE = 7;   /* indexes in the programme list */
 function load(){ try{ return JSON.parse(localStorage.getItem(KEY)) || {}; }catch(e){ return {}; } }
 function save(){ try{ localStorage.setItem(KEY, JSON.stringify(S)); }catch(e){} }
@@ -365,8 +386,12 @@ function newId(){
   catch(e){ for(let i=0;i<8;i++) s+=abc[Math.floor(Math.random()*abc.length)]; }
   return s.slice(0,4)+"-"+s.slice(4);
 }
+function randomGroup(){
+  try{ const a=new Uint32Array(1); crypto.getRandomValues(a); return GROUPS[a[0]%3]; }
+  catch(e){ return GROUPS[Math.floor(Math.random()*3)]; }
+}
 
-/* hash tokens: language (ru/en/es), forced group (control/t1), reset */
+/* hash tokens: language (ru/en/es), forced group (control/t1/uoai), reset */
 const tokens = location.hash.slice(1).toLowerCase().split("-").filter(Boolean);
 if (tokens.includes("reset")) {
   try{ localStorage.removeItem(KEY); }catch(e){}
@@ -374,16 +399,18 @@ if (tokens.includes("reset")) {
   try{ history.replaceState(null, "", location.pathname + location.search + "#" + tokens.filter(x=>x!=="reset").join("-")); }catch(e){}
 }
 let S = tokens.includes("reset") ? {} : load();
-const forced = tokens.includes("t1") ? "t1" : tokens.includes("control") ? "control" : null;
+const forced = GROUPS.find(g=>tokens.includes(g)) || null;
 if (!S.id) S.id = newId();
 if (forced) S.group = forced;
-else if (!S.group) S.group = Math.random() < 0.5 ? "control" : "t1";
+else if (!GROUPS.includes(S.group)) S.group = randomGroup();
 S.lang = ["ru","en","es"].find(l=>tokens.includes(l)) || S.lang || ((navigator.language||"ru").slice(0,2)==="es" ? "es" : (navigator.language||"ru").startsWith("ru") ? "ru" : "en");
 S.profile = S.profile || {};
 save();
 
 /* ===== Render ===== */
 const $ = id => document.getElementById(id);
+const isU = () => S.group === "uoai";
+function aiVersionName(t){ return isU() ? t.u_vBname : t.vBname; }
 function chips(id, name, labels){
   const box = $(id); box.innerHTML = "";
   labels.forEach((lab,i)=>{
@@ -450,12 +477,24 @@ function checkProfile(){
   const ok = missing()===null;
   $("to-program").setAttribute("aria-disabled", String(!ok)); $("profile-hint").hidden = ok;
 }
+function aiHeader(tb, title, only){
+  const head=document.createElement("tr"); head.className="ai"; head.innerHTML=`<td class="w"></td><td><strong></strong> <span class="hint"></span></td>`;
+  head.cells[0].textContent="AI"; head.querySelector("strong").textContent=title; head.querySelector(".hint").textContent="· "+only; tb.append(head);
+}
 function timetable(t){
   const tb = $("tt"); tb.innerHTML = "";
-  t.tt.forEach(([w,topic])=>{ const tr=document.createElement("tr"); tr.innerHTML=`<td class="w"></td><td></td>`; tr.cells[0].textContent=w; tr.cells[1].textContent=topic; tb.append(tr); });
-  const head=document.createElement("tr"); head.className="ai"; head.innerHTML=`<td class="w"></td><td><strong></strong> <span class="hint"></span></td>`;
-  head.cells[0].textContent="AI"; head.querySelector("strong").textContent=t.aiTitle; head.querySelector(".hint").textContent="· "+t.aiOnly; tb.append(head);
-  t.ai.forEach(([w,topic])=>{ const tr=document.createElement("tr"); tr.className="ai"; tr.innerHTML=`<td class="w"></td><td></td>`; tr.cells[0].textContent=w; tr.cells[1].textContent=topic; tb.append(tr); });
+  t.tt.forEach(([w,topic],i)=>{
+    const tr=document.createElement("tr"); tr.innerHTML=`<td class="w"></td><td></td>`; tr.cells[0].textContent=w; tr.cells[1].textContent=topic;
+    if (isU()){ const s=document.createElement("span"); s.className="ailine"; const b=document.createElement("b"); b.textContent=t.u_aiPrefix+" "; s.append(b, document.createTextNode(t.u_ai[i])); tr.cells[1].append(s); }
+    tb.append(tr);
+  });
+  if (isU()){
+    aiHeader(tb, t.u_aiTitle, t.u_aiOnly);
+    const [w,topic] = t.ai[3]; const tr=document.createElement("tr"); tr.className="ai"; tr.innerHTML=`<td class="w"></td><td></td>`; tr.cells[0].textContent=w; tr.cells[1].textContent=topic; tb.append(tr);
+  } else {
+    aiHeader(tb, t.aiTitle, t.aiOnly);
+    t.ai.forEach(([w,topic])=>{ const tr=document.createElement("tr"); tr.className="ai"; tr.innerHTML=`<td class="w"></td><td></td>`; tr.cells[0].textContent=w; tr.cells[1].textContent=topic; tb.append(tr); });
+  }
 }
 function roi(t){
   const show = S.group === "t1";
@@ -468,13 +507,13 @@ function roi(t){
   $("roi-calc").textContent = t.roiCalc(m.fmt(extra), m.fmt(Math.ceil(monthly)), pctTxt);
 }
 /* One code goes to the form: ID-GC-lang-RI-MMMMMMMM-PPPPPPPP[~other programme]
-   G = group (0 control, 1 T1), C = choice (0 basic, 1 AI), R = role (0-3), I = income (0-4),
+   G = group (0 control, 1 ROI, 2 UOAI), C = choice (0 basic, 1 AI), R = role (0-3), I = income (0-4),
    M = 8 motive ratings 1-7 (Thompson & Gui, 2000), P = 8 programme flags 0/1 (AMBA & BGA, 2023) */
 function surveyCode(){
   const p = S.profile, d = v => (v===undefined || v===null ? "x" : String(v));
   const mot = Array.from({length:8},(_,k)=>d((p.mot||[])[k])).join("");
   const prog = Array.from({length:8},(_,k)=>(p.prog||[]).includes(k) ? "1" : "0").join("");
-  let code = [S.id, (S.group==="t1"?"1":"0")+(S.choice==="ai"?"1":S.choice==="basic"?"0":"x"), S.lang, d(p.role)+d(p.income), mot, prog].join("-");
+  let code = [S.id, (GROUP_DIGIT[S.group]||"0")+(S.choice==="ai"?"1":S.choice==="basic"?"0":"x"), S.lang, d(p.role)+d(p.income), mot, prog].join("-");
   const other = (p.prog||[]).includes(OTHER) ? (p.progOther||"").replace(/[~\s]+/g," ").trim().slice(0,80) : "";
   if (other) code += "~" + other;
   return code;
@@ -503,18 +542,20 @@ function render(){
   $("prog-other").placeholder = t.progOtherPh; $("prog-other").value = S.profile.progOther || ""; $("mot-lo").textContent = t.motLo; $("mot-hi").textContent = t.motHi;
   $("consent").checked = S.consent===true; checkProfile();
   timetable(t); roi(t);
+  $("vB-name").textContent = aiVersionName(t);
+  $("vB-inc3").textContent = isU() ? t.u_vBinc3 : t.vBinc3;
   $("priceA").textContent = MONEY[S.lang].fmt(MONEY[S.lang].base);
   $("priceB").textContent = MONEY[S.lang].fmt(MONEY[S.lang].ai);
-  if (S.choice) $("d-choice").textContent = t.chosen(S.choice==="ai" ? t.vBname : t.vAname);
+  if (S.choice) $("d-choice").textContent = t.chosen(S.choice==="ai" ? aiVersionName(t) : t.vAname);
   $("code").textContent = S.id;
-  $("preview").hidden = !forced; if (forced) $("preview").textContent = t.preview(forced === "t1" ? "T1 (ROI)" : "control");
+  $("preview").hidden = !forced; if (forced) $("preview").textContent = t.preview({ t1:"T1 (ROI)", uoai:"T2 (UOAI)", control:"control" }[forced]);
   surveyLink(); view();
 }
 
 /* ===== Events ===== */
 document.querySelectorAll("[data-lang]").forEach(b=>b.addEventListener("click",()=>{
   S.lang = b.dataset.lang; save();
-  const keep = tokens.filter(x=>x==="t1"||x==="control");
+  const keep = tokens.filter(x=>GROUPS.includes(x));
   location.hash = [S.lang, ...keep].join("-");
   render();
 }));
