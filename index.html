@@ -91,8 +91,7 @@ table.tt td{padding:10px 18px;border-bottom:1px solid var(--line);vertical-align
 table.tt tr:last-child td{border-bottom:0}
 table.tt td.w{font-family:var(--mono);font-size:13px;color:var(--muted);white-space:nowrap;width:1%;font-variant-numeric:tabular-nums}
 table.tt tr.ai td{background:var(--accent-soft)}
-.ailine{display:block;margin-top:6px;font-size:13.5px;line-height:1.45;background:var(--accent-soft);border-radius:4px;padding:4px 8px}
-.ailine b{font-weight:600}
+.aibadge{display:inline-block;margin-left:8px;padding:0 7px;border-radius:999px;background:var(--accent-soft);color:var(--accent);font-family:var(--mono);font-size:11.5px;line-height:20px;vertical-align:1px;white-space:nowrap}
 .tt-wrap{overflow-x:auto}
 
 .roi{background:var(--note);color:var(--note-ink);border-radius:var(--r);padding:18px 20px;display:grid;gap:10px}
@@ -270,8 +269,8 @@ ru:{
  ai:[["+ 1","ИИ для анализа рынка и конкурентов"],["+ 2","ИИ для подготовки управленческих решений"],["+ 3","ИИ для отчётов и рутинных задач"],["24/7","ИИ-ассистент по материалам курса: отвечает на вопросы и комментирует задания"]],
  aiOnly:"только в версии с ИИ-блоком",
  vBname:"С ИИ-блоком", vBinc3:"3 занятия ИИ-блока",
- u_aiTitle:"ИИ встроен в каждое занятие", u_aiOnly:"только в версии с ИИ", u_aiPrefix:"В версии с ИИ:",
- u_ai:["ИИ помогает разобрать бизнес-модели компаний","ИИ собирает и сравнивает данные о рынке и конкурентах","ИИ строит и проверяет финансовую модель","ИИ считает сценарии цены и юнит-экономики","ИИ анализирует отзывы и находит сегменты клиентов","ИИ помогает готовить и тестировать маркетинговые тексты","ИИ помогает планировать задачи и распределять роли","ИИ даёт обратную связь на проект до защиты"],
+ u_aiTitle:"ИИ встроен в каждое занятие", u_aiOnly:"только в версии с ИИ", u_badge:"ИИ", u_badgeTitle:"В версии с ИИ это занятие идёт с ИИ-практикой",
+ u_rows:[["×8","Практика с ИИ на каждом занятии: рынок, финансы, клиенты, команда"],["проект","ИИ даёт обратную связь на задания и итоговый проект"]],
  u_vBname:"С ИИ в каждом занятии", u_vBinc3:"ИИ-практика во всех 8 занятиях",
  roiTitle:"Окупится ли доплата за ИИ-блок?",
  roiFact:p=>`По данным PwC (2025), в 2024 году вакансии, где нужны навыки работы с ИИ, предлагали зарплату в среднем на 56% выше, чем похожие вакансии без этого требования. Компания проанализировала почти миллиард вакансий на шести континентах. <a href="${p}" target="_blank" rel="noopener">Источник</a>`,
@@ -312,8 +311,8 @@ en:{
  ai:[["+ 1","AI for market and competitor analysis"],["+ 2","AI for preparing management decisions"],["+ 3","AI for reports and routine tasks"],["24/7","AI assistant for the course materials: answers questions and comments on assignments"]],
  aiOnly:"AI-enhanced version only",
  vBname:"With AI block", vBinc3:"3 AI block sessions",
- u_aiTitle:"AI built into every session", u_aiOnly:"AI version only", u_aiPrefix:"In the AI version:",
- u_ai:["AI helps break down companies’ business models","AI gathers and compares market and competitor data","AI builds and checks the financial model","AI runs pricing and unit-economics scenarios","AI analyses reviews and finds customer segments","AI helps draft and test marketing copy","AI helps plan tasks and assign roles","AI gives feedback on your project before the defence"],
+ u_aiTitle:"AI built into every session", u_aiOnly:"AI version only", u_badge:"AI", u_badgeTitle:"In the AI version this session includes AI practice",
+ u_rows:[["×8","Hands-on AI practice in every session: market, finance, customers, team"],["project","AI gives feedback on assignments and the final project"]],
  u_vBname:"With AI in every session", u_vBinc3:"AI practice in all 8 sessions",
  roiTitle:"Will the extra cost of the AI block pay off?",
  roiFact:p=>`According to PwC (2025), in 2024 jobs requiring AI skills offered on average 56% higher pay than similar jobs without that requirement. PwC analysed close to a billion job ads across six continents. <a href="${p}" target="_blank" rel="noopener">Source</a>`,
@@ -354,8 +353,8 @@ es:{
  ai:[["+ 1","IA para analizar el mercado y la competencia"],["+ 2","IA para preparar decisiones de gestión"],["+ 3","IA para informes y tareas rutinarias"],["24/7","Asistente de IA para los materiales del curso: responde preguntas y comenta las tareas"]],
  aiOnly:"solo en la versión con IA",
  vBname:"Con bloque de IA", vBinc3:"3 sesiones del bloque de IA",
- u_aiTitle:"IA integrada en cada sesión", u_aiOnly:"solo en la versión con IA", u_aiPrefix:"En la versión con IA:",
- u_ai:["La IA ayuda a analizar modelos de negocio de empresas","La IA reúne y compara datos del mercado y la competencia","La IA construye y revisa el modelo financiero","La IA calcula escenarios de precio y economía unitaria","La IA analiza reseñas y encuentra segmentos de clientes","La IA ayuda a redactar y probar textos de marketing","La IA ayuda a planificar tareas y asignar roles","La IA comenta su proyecto antes de la defensa"],
+ u_aiTitle:"IA integrada en cada sesión", u_aiOnly:"solo en la versión con IA", u_badge:"IA", u_badgeTitle:"En la versión con IA esta sesión incluye práctica con IA",
+ u_rows:[["×8","Práctica con IA en cada sesión: mercado, finanzas, clientes, equipo"],["proyecto","La IA comenta las tareas y el proyecto final"]],
  u_vBname:"Con IA en cada sesión", u_vBinc3:"práctica con IA en las 8 sesiones",
  roiTitle:"¿Se recupera el costo extra del bloque de IA?",
  roiFact:p=>`Según PwC (2025), en 2024 los empleos que exigían habilidades de IA ofrecían en promedio un salario 56% más alto que empleos similares sin ese requisito. PwC analizó cerca de mil millones de ofertas de empleo en seis continentes. <a href="${p}" target="_blank" rel="noopener">Fuente</a>`,
@@ -485,12 +484,12 @@ function timetable(t){
   const tb = $("tt"); tb.innerHTML = "";
   t.tt.forEach(([w,topic],i)=>{
     const tr=document.createElement("tr"); tr.innerHTML=`<td class="w"></td><td></td>`; tr.cells[0].textContent=w; tr.cells[1].textContent=topic;
-    if (isU()){ const s=document.createElement("span"); s.className="ailine"; const b=document.createElement("b"); b.textContent=t.u_aiPrefix+" "; s.append(b, document.createTextNode(t.u_ai[i])); tr.cells[1].append(s); }
+    if (isU()){ const b=document.createElement("span"); b.className="aibadge"; b.textContent=t.u_badge; b.title=t.u_badgeTitle; b.setAttribute("aria-label", t.u_badgeTitle); tr.cells[1].append(b); }
     tb.append(tr);
   });
   if (isU()){
     aiHeader(tb, t.u_aiTitle, t.u_aiOnly);
-    const [w,topic] = t.ai[3]; const tr=document.createElement("tr"); tr.className="ai"; tr.innerHTML=`<td class="w"></td><td></td>`; tr.cells[0].textContent=w; tr.cells[1].textContent=topic; tb.append(tr);
+    [...t.u_rows, t.ai[3]].forEach(([w,topic])=>{ const tr=document.createElement("tr"); tr.className="ai"; tr.innerHTML=`<td class="w"></td><td></td>`; tr.cells[0].textContent=w; tr.cells[1].textContent=topic; tb.append(tr); });
   } else {
     aiHeader(tb, t.aiTitle, t.aiOnly);
     t.ai.forEach(([w,topic])=>{ const tr=document.createElement("tr"); tr.className="ai"; tr.innerHTML=`<td class="w"></td><td></td>`; tr.cells[0].textContent=w; tr.cells[1].textContent=topic; tb.append(tr); });
