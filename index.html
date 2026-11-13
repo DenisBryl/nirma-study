@@ -226,7 +226,7 @@ const SURVEY = {
   // (…/viewform?usp=pp_url&entry.123456789=TEST). The test value is replaced with the participant's code.
   ru: "https://docs.google.com/forms/d/e/1FAIpQLSeBoNAJ_8x39M7QsyhR9HPoNrpyjC9-7zfv_nYRTVLgichyTw/viewform?usp=pp_url&entry.1150187766=TEST",
   en: "https://docs.google.com/forms/d/e/1FAIpQLSf9vUEWYCC6bhbDEeGGy3ni-ydleaCNjGbMLhe63netUqVv4w/viewform?usp=pp_url&entry.1336579108=TEST",
-  es: ""   // empty: Spanish speakers get the English form
+  es: "https://docs.google.com/forms/d/e/1FAIpQLSfCR4WUspjs6r2S4c-NUrZdL0srVIPJvznLikz0p2hLxa4BQg/viewform?usp=pp_url&entry.1336579108=TEST"
 };
 /* Source for the ROI argument (PwC, 2025 Global AI Jobs Barometer, press release 3 June 2025) */
 const PWC_URL = "https://www.pwc.com/gx/en/news-room/press-releases/2025/ai-linked-to-a-fourfold-increase-in-productivity-growth.html";
@@ -245,7 +245,7 @@ const MONEY = {
   es: { base:120, ai:180, fmt:n=>"US$"+new Intl.NumberFormat("es-ES",{maximumFractionDigits:0}).format(n) }
 };
 /* monthly income midpoints for the payback line; 0 = no income */
-const INCOME_MID = { ru:[35000,75000,150000,250000,0], en:[700,1750,3750,6500,0], es:[700,1750,3750,6500,0] };
+const INCOME_MID = { ru:[35000,75000,150000,250000,0], en:[350,750,1750,4000,0], es:[350,750,1750,4000,0] };
 
 const T = {
 ru:{
@@ -296,7 +296,7 @@ en:{
  step1:"Profile", step2:"Program", step3:"Survey",
  pTitle:"A few questions about you", pLede:"Your answers help us show the program the way someone in your situation would see it.",
  qRole:"What do you do now?", roles:["I study","I work as a specialist","I lead a team","I run my own business"],
- qIncome:"Your monthly income", incomes:["under $1,000","$1,000–2,500","$2,500–5,000","over $5,000","No income at the moment"],
+ qIncome:"Your monthly income", incomes:["under $500","$500–1,000","$1,000–2,500","over $2,500","No income at the moment"],
  qProg:"Which business or management programme or course are you studying on now?", qProgHint:"You can choose more than one.",
  progs:["Short course or intensive","Professional development programme","Professional retraining programme","MBA or Executive MBA","Master’s in business or management","Bachelor’s in business or management","Other","I am not studying now"], progOtherPh:"Please specify the programme",
  qMot:"What do you want to achieve through business and management education?", qMotHint:"Rate each item from 1 to 7.", motLo:"1 = not important at all", motHi:"7 = very important",
@@ -338,7 +338,7 @@ es:{
  step1:"Perfil", step2:"Programa", step3:"Encuesta",
  pTitle:"Algunas preguntas sobre usted", pLede:"Sus respuestas nos ayudan a mostrar el programa como lo vería alguien en su situación.",
  qRole:"¿A qué se dedica ahora?", roles:["Estudio","Trabajo como especialista","Dirijo un equipo","Tengo mi propio negocio"],
- qIncome:"Su ingreso mensual", incomes:["menos de US$1.000","US$1.000–2.500","US$2.500–5.000","más de US$5.000","Ahora no tengo ingresos"],
+ qIncome:"Su ingreso mensual", incomes:["menos de US$500","US$500–1.000","US$1.000–2.500","más de US$2.500","Ahora no tengo ingresos"],
  qProg:"¿En qué programa o curso de negocios y gestión estudia actualmente?", qProgHint:"Puede elegir varias opciones.",
  progs:["Curso corto o intensivo","Programa de actualización profesional","Programa de reconversión profesional","MBA o Executive MBA","Máster en negocios o gestión","Grado en negocios o gestión","Otro","Ahora no estudio"], progOtherPh:"Indique el programa",
  qMot:"¿Qué quiere lograr con la formación en negocios y gestión?", qMotHint:"Valore cada punto del 1 al 7.", motLo:"1 = nada importante", motHi:"7 = muy importante",
